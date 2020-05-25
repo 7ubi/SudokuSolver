@@ -43,7 +43,6 @@ def canBePlaced(row, col, val):
                 return False
 
     return True
-
 def updateScreen():
     #sets background white
     screen.fill(pygame.Color(255, 255, 255))
