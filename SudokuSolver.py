@@ -1,18 +1,13 @@
 import pygame
 
-#define the grid / playing field
+import sys
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction, QLineEdit, QMessageBox
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import pyqtSlot
 
-grid = [
-    [5, 0, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0,1 , 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 6, 0, 0],
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9]
-]
+
+grid = [[0 for x in range(9)] for y in range(9)] 
+
 
 #delay before next number gets placed in milliseconds
 delay = 100 
@@ -70,7 +65,9 @@ def updateScreen():
             textsurface = myfont.render(str(grid[j][i]), False, (0, 0, 0))
             screen.blit(textsurface,(i * 70 + 20, j * 70 + 15))
     pygame.display.update()
-    
+
+  
+
 def solve():
     #go through every cell
     for i in range(0, 9):
@@ -82,6 +79,7 @@ def solve():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                    sys.exit()
 
             #check every number
             for num in range(1, 10):
@@ -115,6 +113,8 @@ def Main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+                pygame.quit()
+                sys.exit()
 
         updateScreen()
         solve()
@@ -123,7 +123,61 @@ def Main():
         pygame.display.update()
 
 
+class App(QMainWindow):
 
-Main()
+    def __init__(self):
+        super().__init__()
+        self.title = 'Sodoku Solver'
+        self.left = 100
+        self.top = 100
+        self.width = 450
+        self.height = 500
+        self.initUI()
+    
+    def initUI(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+    
+        # Create textbox
+        self.textbox = []
+        for i in range(9):
+            for j in range(9):
+                self.textboxi = QLineEdit(self)
+                self.textboxi.move(i*50, j*50)
+                self.textboxi.resize(50,50)
+                f = self.textboxi.font()
+                f.setPointSize(40) # sets the size to 27
+                self.textboxi.setFont(f)
+                self.textbox.append(self.textboxi)
+        
+        # Create a button in the window
+        self.button = QPushButton('Solve Sodoku', self)
+        self.button.move(225,450)
+        
+        # connect button to function on_click
+        self.button.clicked.connect(self.on_click)
+        self.show()
+    
+    @pyqtSlot()
+    def on_click(self):
+        for i in range(9):
+            for j in range(9):
+                if self.textbox[(j*9) + i].text() == "":
+                    grid[i][j] = 0
+                elif int(self.textbox[(j*9) + i].text()) < 0 or int(self.textbox[(j*9) + i].text()) > 9:
+                    self.msg = QMessageBox(self)
+                    self.msg.setWindowTitle('Error')
+                    self.msg.setText("Numbers must be between 1 and 9!")
+                    self.msg.setIcon(QMessageBox.Critical)
+                    x = self.msg.exec_()
+                    return
+                else:
+                    grid[i][j] = int(self.textbox[(j * 9) + i].text())
+        
+        Main()
 
-pygame.quit()
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())
+    
