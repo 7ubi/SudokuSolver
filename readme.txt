@@ -4,7 +4,7 @@ What I learned?:
 
 I learned about backtracking, how it works and how to apply it.
 
-Requirements: Python 3.x and pygame installed
+Requirements: Python 3.x, pygame and PyQt5 installed
 
 How to use:
 
