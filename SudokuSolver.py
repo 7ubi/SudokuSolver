@@ -162,17 +162,25 @@ class App(QMainWindow):
     def on_click(self):
         for i in range(9):
             for j in range(9):
-                if self.textbox[(j*9) + i].text() == "":
-                    grid[i][j] = 0
-                elif int(self.textbox[(j*9) + i].text()) < 0 or int(self.textbox[(j*9) + i].text()) > 9:
+                try:
+                    if self.textbox[(j*9) + i].text() == "":
+                        grid[i][j] = 0
+                    elif int(self.textbox[(j*9) + i].text()) < 0 or int(self.textbox[(j*9) + i].text()) > 9:
+                        self.msg = QMessageBox(self)
+                        self.msg.setWindowTitle('Error')
+                        self.msg.setText("Numbers must be between 1 and 9!")
+                        self.msg.setIcon(QMessageBox.Critical)
+                        x = self.msg.exec_()
+                        return
+                    else:
+                        grid[i][j] = int(self.textbox[(j * 9) + i].text())
+                except ValueError:
                     self.msg = QMessageBox(self)
                     self.msg.setWindowTitle('Error')
                     self.msg.setText("Numbers must be between 1 and 9!")
                     self.msg.setIcon(QMessageBox.Critical)
                     x = self.msg.exec_()
                     return
-                else:
-                    grid[i][j] = int(self.textbox[(j * 9) + i].text())
         
         Main()
 
